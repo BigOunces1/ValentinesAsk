@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine?</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: radial-gradient(circle at top, #ffe1ee, #fff);
+      overflow: hidden;
+    }
+    .card{
+      width:min(520px, 92vw);
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: 0 16px 50px rgba(0,0,0,.12);
+      text-align: center;
+      position: relative;
+    }
+    h1{ margin: 0 0 8px; font-size: 34px; }
+    p{ margin: 0 0 18px; opacity: .8; }
+    .btns{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top: 14px; }
+    button{
+      border: 0; border-radius: 14px; padding: 12px 18px;
+      font-size: 16px; cursor: pointer;
+      transition: transform .08s ease;
+      user-select: none;
+    }
+    button:active{ transform: scale(.98); }
+    #yes{ background:#ff3b7b; color:white; }
+    #no{
+      background:#f1f1f1; color:#333;
+      position: relative; /* will switch to fixed when it starts running */
+    }
+    .msg{
+      margin-top: 18px;
+      font-size: 18px;
+      display:none;
+    }
+    .hearts{
+      position:absolute; inset:0; pointer-events:none; overflow:hidden;
+    }
+    .heart{
+      position:absolute; font-size: 18px; opacity:.75;
+      animation: floatUp linear forwards;
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(0) scale(1); opacity:.8; }
+      to{ transform: translateY(-140px) scale(1.3); opacity:0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExemRyYnEwanpzaTF4ZTMyZnMxYXEwMjJpZDNqa2E0ZHR4ZXMwYTF6YiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/0t8boa7RyRvcgcN84x/giphy.gif" alt="Cute Bear" style="width: 350px; height: auto; margin-bottom: 10px;">
+    <div class="hearts" id="hearts"></div>
+    <h1>Be my Valentine? 💖</h1>
+    <p>Warning: selecting “No” may trigger ✨consequences✨</p>
+
+    <div class="btns">
+      <button id="yes">Yes 😌</button>
+      <button id="no">No 🙃</button>
+    </div>
+
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <script>
+    const yes = document.getElementById("yes");
+    const no = document.getElementById("no");
+    const msg = document.getElementById("msg");
+    const hearts = document.getElementById("hearts");
+
+    function showMessage(html){
+      msg.style.display = "block";
+      msg.innerHTML = html;
+    }
+
+    function burstHearts(count = 18){
+      const rect = document.body.getBoundingClientRect();
+      for(let i=0;i<count;i++){
+        const s = document.createElement("div");
+        s.className = "heart";
+        s.textContent = ["💗","💖","💕","💘","💝"][Math.floor(Math.random()*5)];
+        s.style.left = (Math.random() * rect.width) + "px";
+        s.style.top = (rect.height - 40 + Math.random()*20) + "px";
+        s.style.animationDuration = (0.8 + Math.random()*0.9) + "s";
+        hearts.appendChild(s);
+        setTimeout(()=>s.remove(), 1700);
+      }
+    }
+
+    yes.addEventListener("click", () => {
+      burstHearts(28);
+      showMessage("YAYYY 😭💞<br/>Text me: <b>“I said yes”</b> so I can celebrate properly.");
+      no.disabled = true;
+      yes.disabled = true;
+    });
+
+    // Make the No button run away (funny)
+    let dodgeCount = 0;
+    function moveNoButton(){
+      dodgeCount++;
+      no.style.position = "fixed";
+
+      const padding = 16;
+      const maxX = window.innerWidth - no.offsetWidth - padding;
+      const maxY = window.innerHeight - no.offsetHeight - padding;
+
+      const x = Math.max(padding, Math.floor(Math.random() * maxX));
+      const y = Math.max(padding, Math.floor(Math.random() * maxY));
+
+      no.style.left = x + "px";
+      no.style.top = y + "px";
+
+      if (dodgeCount === 3) no.textContent = "Nice try 😭";
+      if (dodgeCount === 6) no.textContent = "You can’t 😤";
+      if (dodgeCount === 9) no.textContent = "Just press Yes 😌";
+      burstHearts(6);
+    }
+
+    // Works on desktop + mobile:
+    no.addEventListener("mouseenter", moveNoButton);
+    no.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); }, {passive:false});
+
+    // Optional: if they somehow click it, be playful
+    no.addEventListener("click", () => {
+      showMessage("Hmm… that button seems broken 🤔<br/>Try the other one 😌");
+      burstHearts(10);
+    });
+  </script>
+</body>
+</html>
